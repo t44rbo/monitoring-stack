@@ -1,0 +1,10 @@
+# Docker volumes data (если монтируются в папку)
+data/
+
+# Secrets
+.env
+*.secret
+
+# IDE
+*.swp
+.idea/
