@@ -1,2 +1,2 @@
-# My Monitoring Stack
+# My Super Monitoring Stack
 My learning project. I am using prometheus, grafana, node exporter, docker compose.
