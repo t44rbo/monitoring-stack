@@ -17,8 +17,17 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
+    pid: "host"
     ports:
       - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -39,6 +48,22 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=yaris123
     volumes:
       - grafana-data:/var/lib/grafana
+
+  alertmanager-bot:
+    image: metalmatze/alertmanager-bot:0.4.3
+    container_name: alertmanager-bot
+    environment:
+      - ALERTMANAGER_URL=http://alertmanager:9093
+      - TELEGRAM_ADMIN=161386505
+      - TELEGRAM_TOKEN=8446666611:AAGuC5jr_0CSrGBYyBRBfJUXFM-2cSq1LDs
+      - STORE=bolt
+      - BOLT_PATH=/data/bot.db
+      - PROXY=socks5h://89.47.161.10:1080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
 
 volumes:
   prometheus-data:

@@ -6,7 +6,10 @@ route:
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 1h
-  receiver: 'null'
+  receiver: 'alertmanager-bot'
 
 receivers:
-  - name: 'null'
+- name: 'alertmanager-bot'
+  webhook_configs:
+  - send_resolved: true
+    url: 'http://alertmanager-bot:8080'
