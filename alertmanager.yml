@@ -6,10 +6,10 @@ route:
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 1h
-  receiver: 'alertmanager-bot'
+  receiver: 'my-python-script'
 
 receivers:
-- name: 'alertmanager-bot'
-  webhook_configs:
-  - send_resolved: true
-    url: 'http://alertmanager-bot:8080'
+  - name: 'my-python-script'
+    webhook_configs:
+      - send_resolved: true
+        url: 'http://172.17.0.1:8000'
