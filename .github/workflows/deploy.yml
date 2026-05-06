@@ -23,5 +23,5 @@ jobs:
           script: |
             cd ~/docker/monitoring
             git pull origin main
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
