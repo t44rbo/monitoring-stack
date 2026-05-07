@@ -1,42 +1,58 @@
-##Мой проект мониторинга сервера
-В качестве основы взят VPS c ОС ubuntu 24.04.
-Мониторинг производится с помощью Prometheus, Node exporter; Графики строятся с помощью Grafana;
-Алерты отправляются в телеграм бота через Alertmanager. В качестве reverse-proxy используется Nginx.
-Реализована возможность зайти в веб интерфейс Grafana и Prometheus из интернета.
+# Monitoring Stack
 
-Данный стек мониторит основные жизненные показатели сервера такие как средняя нагрузка на ЦП, загрузка ОЗУ,
-свободное место на диске /, также доступность контейнеров.
+A self-hosted monitoring solution built on a VPS running Ubuntu 24.04.
 
-##Инструкция по применению
+## Stack
+- **Prometheus** — metrics collection (pull model)
+- **Node Exporter** — host metrics via /proc
+- **Grafana** — dashboards and visualization
+- **Alertmanager** — alert routing to Telegram
+- **Nginx** — reverse proxy, single entry point
 
-#Клонируем репозиторий
+## What it monitors
+- CPU load average
+- RAM usage
+- Disk space (/)
+- Container availability
+
+## Quick Start
+
+```bash
 git clone https://github.com/t44rbo/monitoring-stack.git
 cd monitoring-stack
 
-#Создаем файл с секретами
-nano .env 
+# Configure secrets
+cp .env.example .env
+nano .env
 
-#Заполняем переменные в файле .env
+# Set Nginx basic auth for Prometheus UI
+echo "admin:$(openssl passwd -apr1 'your_password')" > nginx/.htpasswd
 
-GF_ADMIN_PASSWORD=ваш пароль
-GF_ADMIN_USER=admin
-TG_BOT_TOKEN=токен вашего тг бота
-TG_CHAT_ID=ваш чат ИД
+# Create Alertmanager config with your Telegram credentials
+cp alertmanager/alertmanager.yml.example alertmanager/alertmanager.yml
+nano alertmanager/alertmanager.yml
 
-# Создаём файл с логином и хешем пароля
-# Замени "твой_пароль" на свой
-echo "admin:$(openssl passwd -apr1 'твой_пароль')" > nginx/.htpasswd
+# Start
+docker compose up -d
+```
 
-##Структура папок
+## Access
+| Service    | URL                  | Auth         |
+|------------|----------------------|--------------|
+| Grafana    | http://IP/grafana/   | admin + .env |
+| Prometheus | http://IP/prometheus/| basic auth   |
+
+## Project Structure
+```
 monitoring-stack/
-├── .env
-├── .gitignore
+├── .env                    # secrets (not in git)
 ├── docker-compose.yml
 ├── prometheus/
 │   ├── prometheus.yml
 │   └── alert.rules.yml
 ├── alertmanager/
-│   └── alertmanager.yml
+│   └── alertmanager.yml    # not in git, contains tokens
 └── nginx/
-    └── nginx.conf
-    |_ .htpaswd    
+    ├── nginx.conf
+    └── .htpasswd           # not in git
+```
