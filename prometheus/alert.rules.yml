@@ -1,0 +1,39 @@
+groups:
+  - name: node_alerts
+    rules:
+
+      - alert: HighCPU
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая нагрузка CPU"
+          description: "CPU > 80% уже 2 минуты на {{ $labels.instance }}"
+
+      - alert: HighMemory
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Мало памяти"
+          description: "RAM занята > 85% на {{ $labels.instance }}"
+
+      - alert: DiskRunningFull
+        expr: (1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 > 80
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Диск заполнен"
+          description: "Диск / заполнен > 80% на {{ $labels.instance }}"
+
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервис недоступен"
+          description: "{{ $labels.instance }} не отвечает уже 1 минуту"
