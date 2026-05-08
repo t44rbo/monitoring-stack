@@ -35,6 +35,12 @@ nano alertmanager/alertmanager.yml
 # Start
 docker compose up -d
 ```
+## Import Grafana dashboard "VPS_overview.json"
+- log in to grafana GUI
+- click "+" button at the top right corner
+- click "Import dashboard"
+- upload "VPS_overview.json"
+- click "Import" button
 
 ## Access
 | Service    | URL                  | Auth         |
